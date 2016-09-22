@@ -1,2 +1,2 @@
 # docker-sandbox
-Play area for docker
+Test area for Docker experiments.
