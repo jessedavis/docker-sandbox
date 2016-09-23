@@ -1,0 +1,49 @@
+# This should be your Ansible playbooks to provision your containers.
+# An inventory will be automatically created using the names of the services
+# from your container.yml file.
+# Add any roles or other modules you'll need to this directory too.
+# For many examples of roles, check out Ansible Galaxy: https://galaxy.ansible.com/
+#
+
+# TODO:
+#    break this out and get into trello
+#        what I'm wanting to do for this wee
+#    "common" playbook for utilties, epel update
+#        install less
+#    call common playbook from here 
+#    configure nginx
+#    configure nginx to start
+#    XXX: maybe running into https://github.com/ansible/ansible-modules-core/issues/593 ? 
+#        need to understand systemd too
+#        this might be why dumb-init is being used?
+#    install temp html
+#    open up 80 (expose from docker)
+#    look to see if it works
+#        might need to set up nginx as CMD
+#    figure out how to make playbooks verbose so I can read output easier
+
+# - hosts: all
+#   gather_facts: false
+#   tasks:
+#     - raw: which python || apt-get update
+#     - raw: (which python && which aptitude) || apt-get install -y python python-apt aptitude
+- hosts: web
+  tasks:
+#    - name: Upgrade YUM
+#      yum: update_cache=yes
+    - name: Install EPEL Release
+      yum: name=epel-release state=latest
+    - name: Install common utilities
+      yum: name=less state=latest
+    - name: Install ca-certificates
+      yum: name=ca-certificates state=latest
+    - name: Install the latest version of nginx
+      yum: name=nginx state=latest
+#    - name: Configure nginx to start on boot
+#      service: name=nginx enabled=yes
+    - name: Copy our test HTML file to the host
+      copy: src=files/test.html dest=/usr/share/nginx/html/test.html owner=root group=root mode=0644
+    - name: Start nginx
+      service: name=nginx state=started
+#     - name: Install dumb-init
+#       apt: deb=https://github.com/Yelp/dumb-init/releases/download/v1.0.2/dumb-init_1.0.2_amd64.deb
