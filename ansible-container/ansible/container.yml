@@ -5,9 +5,12 @@ services:
   #
   web:
     image: centos:7.2.1511
-  #   ports:
-  #     - "80:80"
-  #   command: ['/usr/bin/dumb-init', '/usr/sbin/apache2ctl', '-D', 'FOREGROUND']
+    ports:
+      - "80:80"
+      - "443:443"
+    # command requires dumb-init to be installed, entrypoint can't be used since
+    # it's used during ansible install
+    command: ["/usr/local/bin/dumb-init", "/usr/sbin/nginx", "-g", "daemon off;"]
   #   dev_overrides:
   #     environment:
   #       - "DEBUG=1"
